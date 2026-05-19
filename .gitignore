@@ -1,0 +1,17 @@
+# BrandLint data
+data/
+node_modules/
+dist/
+*.db
+*.db-shm
+*.db-wal
+.env
+.env.*
+*.log
+*.pem
+*.key
+*.cert
+.DS_Store
+
+# Dev utilities
+gen-icons.js
