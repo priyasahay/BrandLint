@@ -9,10 +9,10 @@ BrandLint helps you close that gap. Point it at any public portfolio or personal
 Paste a URL, get a score across five brand dimensions, discover which of 12 archetypes your writing naturally signals, and walk away with a focused list of things worth fixing. The kind of clarity that usually takes weeks of feedback, in seconds. Runs entirely on your own machine. Nothing gets sent anywhere.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org)
 
-**[Live Preview →](https://priyasahay.github.io/brandlint)**
+**[Live Preview →](https://priyasahay.github.io/BrandLint/)**
 
 ---
 
@@ -47,7 +47,7 @@ BrandLint scrapes a public URL, analyses its content, and returns:
 
 ```bash
 git clone https://github.com/priyasahay/BrandLint.git
-cd brandlint
+cd BrandLint
 npm install
 npm run dev
 ```
@@ -62,7 +62,7 @@ Open [http://localhost:3000](http://localhost:3000), paste a portfolio URL, and 
 
 | Tool | Version | Notes |
 |------|---------|-------|
-| Node.js | ≥ 18 | [Download](https://nodejs.org) |
+| Node.js | ≥ 22 | [Download](https://nodejs.org) |
 | npm | ≥ 9 | Bundled with Node |
 
 ### Steps
@@ -70,7 +70,7 @@ Open [http://localhost:3000](http://localhost:3000), paste a portfolio URL, and 
 ```bash
 # 1. Clone
 git clone https://github.com/priyasahay/BrandLint.git
-cd brandlint
+cd BrandLint
 
 # 2. Install dependencies
 npm install

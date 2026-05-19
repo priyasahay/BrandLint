@@ -3,480 +3,604 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BrandLint — Personal Brand Analyser</title>
-  <meta name="description" content="Open-source personal brand analyser. Paste any portfolio URL and get scored across 5 brand dimensions, discover your archetype, and know exactly what to fix.">
+  <title>BrandLint — Personal Brand Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #06091a;
-      --surface: #0a0f24;
-      --surface2: #0f1628;
-      --surface3: #16203a;
-      --border: #1e2d47;
-      --text: #e8eeff;
-      --muted: #7a8ab0;
-      --primary: #7c3aed;
-      --primary-light: #a78bfa;
-      --sky: #0ea5e9;
-      --grad: linear-gradient(135deg, #7c3aed, #0ea5e9);
-      --success: #22c55e;
-      --warning: #f59e0b;
-      --error: #ef4444;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a { color: var(--primary-light); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2rem; height: 56px;
-      background: rgba(6,9,26,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo {
-      display: flex; align-items: center; gap: 8px;
-      font-weight: 700; font-size: 1rem;
-    }
-    .nav-logo svg { flex-shrink: 0; }
-    .nav-links { display: flex; align-items: center; gap: 1.5rem; font-size: 0.875rem; color: var(--muted); }
-    .nav-links a { color: var(--muted); transition: color 0.2s; }
-    .nav-links a:hover { color: var(--text); text-decoration: none; }
-    .btn-grad {
-      padding: 7px 18px; border-radius: 8px;
-      background: var(--grad); color: #fff;
-      font-weight: 600; font-size: 0.85rem;
-      transition: opacity 0.2s;
-    }
-    .btn-grad:hover { opacity: 0.88; text-decoration: none; }
-
-    /* HERO */
-    .hero {
-      min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      padding: 100px 2rem 60px;
-      position: relative; overflow: hidden;
-    }
-    .hero-glow {
-      position: absolute; border-radius: 50%; pointer-events: none;
-      filter: blur(80px); opacity: 0.35;
-    }
-    .glow-1 { width: 600px; height: 600px; top: -100px; left: -100px; background: radial-gradient(circle, #7c3aed, transparent 70%); }
-    .glow-2 { width: 500px; height: 500px; bottom: -80px; right: -80px; background: radial-gradient(circle, #0ea5e9, transparent 70%); }
-
-    .hero-inner {
-      max-width: 1100px; width: 100%;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
-      align-items: center; position: relative; z-index: 1;
-    }
-    @media (max-width: 820px) {
-      .hero-inner { grid-template-columns: 1fr; }
-      .hero-right { display: none; }
-    }
-
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 5px 14px; border-radius: 99px;
-      border: 1px solid rgba(124,58,237,0.4);
-      background: rgba(124,58,237,0.08);
-      font-size: 0.78rem; color: var(--primary-light);
-      margin-bottom: 1.5rem;
-    }
-    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary-light); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-    h1 {
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 800; line-height: 1.15;
-      margin-bottom: 1.25rem;
-    }
-    .grad-text {
-      background: var(--grad);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-sub {
-      font-size: 1.05rem; color: var(--muted);
-      margin-bottom: 2rem; max-width: 480px;
-    }
-
-    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn-primary {
-      padding: 12px 24px; border-radius: 10px;
-      background: var(--grad); color: #fff;
-      font-weight: 600; font-size: 0.95rem;
-      transition: opacity 0.2s; display: inline-block;
-    }
-    .btn-primary:hover { opacity: 0.88; text-decoration: none; }
-    .btn-outline {
-      padding: 12px 24px; border-radius: 10px;
-      border: 1px solid var(--border); color: var(--text);
-      font-weight: 500; font-size: 0.95rem;
-      transition: border-color 0.2s; display: inline-block;
-      background: var(--surface);
-    }
-    .btn-outline:hover { border-color: var(--primary); text-decoration: none; }
-
-    /* DEMO CARD */
-    .demo-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
-    }
-    .dc-topbar {
-      background: var(--surface2);
-      border-bottom: 1px solid var(--border);
-      padding: 10px 16px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .dc-dots { display: flex; gap: 6px; }
-    .dc-dots span { width: 10px; height: 10px; border-radius: 50%; }
-    .dc-url {
-      flex: 1; background: var(--surface3); border-radius: 6px;
-      padding: 4px 10px; font-size: 0.75rem; color: var(--muted);
-    }
-    .dc-body { padding: 20px; }
-
-    /* score ring */
-    .dc-score-row { display: flex; gap: 20px; align-items: center; margin-bottom: 18px; }
-    .ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
-    .ring-wrap svg { transform: rotate(-90deg); }
-    .ring-center {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .ring-val { font-size: 1.3rem; font-weight: 800; }
-    .ring-grade { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
-    .dc-dims { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-    .dc-dim { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; }
-    .dc-dim-name { width: 72px; color: var(--muted); flex-shrink: 0; }
-    .dc-track { flex: 1; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
-    .dc-fill { height: 100%; border-radius: 2px; }
-    .dc-val { width: 22px; text-align: right; font-weight: 600; font-size: 0.72rem; }
-
-    /* divider */
-    .dc-divider { height: 1px; background: var(--border); margin: 14px 0; }
-
-    /* archetype strip */
-    .dc-arch { display: flex; align-items: center; gap: 10px; }
-    .dc-arch-emoji { font-size: 1.5rem; }
-    .dc-arch-name { font-weight: 700; font-size: 0.85rem; }
-    .dc-arch-tag { font-size: 0.72rem; color: var(--muted); }
-    .dc-conf { margin-left: auto; font-size: 0.72rem; color: var(--primary-light); font-weight: 600; }
-
-    /* issues */
-    .dc-issues { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
-    .dc-issue {
-      display: flex; gap: 8px; align-items: flex-start;
-      padding: 8px 10px; border-radius: 8px;
-      background: var(--surface2); font-size: 0.75rem;
-    }
-    .sev-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
-    .dc-issue-msg { color: var(--muted); flex: 1; }
-    .dc-issue-dim { font-weight: 600; margin-right: 4px; }
-
-    /* FEATURES */
-    .features {
-      max-width: 1100px; margin: 0 auto;
-      padding: 80px 2rem;
-    }
-    .section-label {
-      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 1.5px; color: var(--primary-light);
-      margin-bottom: 0.75rem;
-    }
-    .section-title { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; margin-bottom: 0.5rem; }
-    .section-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 3rem; }
-
-    .feat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.25rem;
-    }
-    .feat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.5rem;
-      transition: border-color 0.2s;
-    }
-    .feat-card:hover { border-color: rgba(124,58,237,0.5); }
-    .feat-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
-    .feat-name { font-weight: 700; margin-bottom: 0.4rem; }
-    .feat-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
-
-    /* INSTALL */
-    .install {
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .install-inner {
-      max-width: 1100px; margin: 0 auto;
-      padding: 80px 2rem;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
-    }
-    @media (max-width: 720px) { .install-inner { grid-template-columns: 1fr; } }
-
-    .install h2 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.75rem; }
-    .install p { color: var(--muted); margin-bottom: 1.5rem; }
-
-    .code-block {
-      background: #020409;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 0.82rem;
-      line-height: 2;
-      overflow-x: auto;
-    }
-    .code-comment { color: #4a5568; }
-    .code-cmd { color: #a78bfa; }
-    .code-dim { color: #22c55e; }
-
-    /* FOOTER */
-    footer {
-      text-align: center; padding: 2.5rem 2rem;
-      color: var(--muted); font-size: 0.85rem;
-      border-top: 1px solid var(--border);
-    }
-    footer a { color: var(--primary-light); }
-  </style>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
-    <div class="nav-logo">
-      <svg viewBox="0 0 20 20" width="16" height="16" fill="none">
-        <circle cx="8" cy="8" r="5.5" stroke="white" stroke-width="1.8"/>
-        <path d="M5.5 8 L7.5 10 L11 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="12.3" y1="12.3" x2="17.5" y2="17.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      BrandLint
+  <!-- Top Nav -->
+  <nav class="topnav">
+    <div class="topnav-logo">
+      <span class="topnav-icon">
+        <svg viewBox="0 0 20 20" width="15" height="15" fill="none">
+          <circle cx="8" cy="8" r="5.5" stroke="white" stroke-width="1.8"/>
+          <path d="M5.5 8 L7.5 10 L11 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="12.3" y1="12.3" x2="17.5" y2="17.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span>BrandLint</span>
     </div>
-    <div class="nav-links">
-      <a href="https://github.com/priyasahay/BrandLint">GitHub</a>
-      <a href="https://github.com/priyasahay/BrandLint/blob/main/docs/API.md">API</a>
-      <a href="https://github.com/priyasahay/BrandLint/blob/main/CONTRIBUTING.md">Contribute</a>
-      <a href="https://github.com/priyasahay/BrandLint" class="btn-grad">Star on GitHub ★</a>
+    <div class="topnav-links">
+      <button id="theme-toggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light mode">
+        <span id="theme-icon">☀</span>
+      </button>
     </div>
   </nav>
 
-  <!-- HERO -->
-  <section class="hero">
+  <!-- Hero -->
+  <header class="hero">
+    <canvas id="hero-canvas" class="hero-canvas"></canvas>
+    <div class="hero-aurora"></div>
+    <div class="hero-grid"></div>
     <div class="hero-glow glow-1"></div>
     <div class="hero-glow glow-2"></div>
-    <div class="hero-inner">
+    <div class="hero-glow glow-3"></div>
+    <div class="hero-glow glow-4"></div>
+    <div class="hero-content">
 
+      <!-- Left: text + search -->
       <div class="hero-left">
         <div class="hero-badge">
           <span class="badge-dot"></span>
-          Open Source · Runs Locally · Zero Data Sent
+          Personal Brand Intelligence · 100% Private · Runs Locally
         </div>
-        <h1>
-          Your portfolio says something.<br>
-          <span class="grad-text">Does it say what you think?</span>
+        <h1 class="hero-title">
+          Does your portfolio say<br>
+          <span class="gradient-text">what you think it does?</span>
         </h1>
         <p class="hero-sub">
-          BrandLint analyses any public portfolio or personal site and tells you exactly what's working, what's missing, and what to fix first.
+          Paste any portfolio URL. Get scored across 5 brand dimensions, discover your writing archetype, and get a prioritised list of exactly what to fix.
         </p>
-        <div class="hero-actions">
-          <a href="https://github.com/priyasahay/BrandLint" class="btn-primary">Get Started Free</a>
-          <a href="https://github.com/priyasahay/BrandLint" class="btn-outline">View on GitHub</a>
+
+        <form id="analyze-form" class="search-bar" autocomplete="off">
+          <div class="search-inner">
+            <span class="search-prefix">
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none">
+                <circle cx="8" cy="8" r="5.5" stroke="#a78bfa" stroke-width="1.6"/>
+                <path d="M5.5 8 L7.5 10 L11 6" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="12.3" y1="12.3" x2="17.5" y2="17.5" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <input
+              type="text"
+              id="url-input"
+              placeholder="yourname.dev or paste any portfolio URL"
+              spellcheck="false"
+              required
+            >
+            <button type="submit" id="analyze-btn">
+              <span id="btn-text">Analyze</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+          <div class="search-examples">
+            <span class="search-examples-label">Try an example:</span>
+            <button type="button" class="example-chip" data-url="rbsahay.wordpress.com">rbsahay.wordpress.com</button>
+          </div>
+          <div class="ext-hint">
+            <span class="ext-hint-icon">🧩</span>
+            Chrome Extension available — analyze any page in one click.
+            <span class="ext-hint-path">Load <code>chrome-extension/</code> in chrome://extensions</span>
+          </div>
+        </form>
+
+        <div class="hero-pills">
+          <div class="hero-pill">
+            <span class="pill-num">5</span>
+            <span class="pill-label">Dimensions</span>
+          </div>
+          <div class="hero-pill-sep"></div>
+          <div class="hero-pill">
+            <span class="pill-num">12</span>
+            <span class="pill-label">Archetypes</span>
+          </div>
+          <div class="hero-pill-sep"></div>
+          <div class="hero-pill">
+            <span class="pill-num">0</span>
+            <span class="pill-label">Data sent</span>
+          </div>
         </div>
       </div>
 
-      <!-- SAMPLE RESULT CARD -->
+      <!-- Right: mock result preview -->
       <div class="hero-right">
-        <div class="demo-card">
-          <div class="dc-topbar">
-            <div class="dc-dots">
-              <span style="background:#ef4444"></span>
-              <span style="background:#f59e0b"></span>
-              <span style="background:#22c55e"></span>
+        <div class="hero-mock-card">
+          <div class="hmc-header">
+            <div class="hmc-favicon">
+              <svg viewBox="0 0 20 20" width="11" height="11" fill="none">
+                <circle cx="8" cy="8" r="5.5" stroke="white" stroke-width="1.8"/>
+                <path d="M5.5 8 L7.5 10 L11 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="12.3" y1="12.3" x2="17.5" y2="17.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              </svg>
             </div>
-            <div class="dc-url">alex.dev</div>
+            <span class="hmc-url">portfolio-example.dev</span>
+            <span class="hmc-sample-badge">Sample</span>
           </div>
-          <div class="dc-body">
-
-            <!-- Overall score + dims -->
-            <div class="dc-score-row">
-              <div class="ring-wrap">
-                <svg viewBox="0 0 72 72" width="72" height="72">
-                  <circle cx="36" cy="36" r="28" fill="none" stroke="#1e2d47" stroke-width="5"/>
-                  <circle cx="36" cy="36" r="28" fill="none" stroke="#22c55e" stroke-width="5"
-                    stroke-linecap="round"
-                    stroke-dasharray="175.9"
-                    stroke-dashoffset="52.8"/>
-                </svg>
-                <div class="ring-center">
-                  <span class="ring-val" style="color:#22c55e">70</span>
-                  <span class="ring-grade" style="color:#22c55e">Good</span>
-                </div>
-              </div>
-              <div class="dc-dims">
-                <div class="dc-dim">
-                  <span class="dc-dim-name">Clarity</span>
-                  <div class="dc-track"><div class="dc-fill" style="width:82%;background:#22c55e"></div></div>
-                  <span class="dc-val" style="color:#22c55e">82</span>
-                </div>
-                <div class="dc-dim">
-                  <span class="dc-dim-name">Impact</span>
-                  <div class="dc-track"><div class="dc-fill" style="width:65%;background:#f59e0b"></div></div>
-                  <span class="dc-val" style="color:#f59e0b">65</span>
-                </div>
-                <div class="dc-dim">
-                  <span class="dc-dim-name">Credibility</span>
-                  <div class="dc-track"><div class="dc-fill" style="width:74%;background:#22c55e"></div></div>
-                  <span class="dc-val" style="color:#22c55e">74</span>
-                </div>
-                <div class="dc-dim">
-                  <span class="dc-dim-name">Attention</span>
-                  <div class="dc-track"><div class="dc-fill" style="width:55%;background:#f59e0b"></div></div>
-                  <span class="dc-val" style="color:#f59e0b">55</span>
-                </div>
-                <div class="dc-dim">
-                  <span class="dc-dim-name">Actionability</span>
-                  <div class="dc-track"><div class="dc-fill" style="width:40%;background:#ef4444"></div></div>
-                  <span class="dc-val" style="color:#ef4444">40</span>
-                </div>
+          <div class="hmc-score-area">
+            <div class="hmc-ring-wrap">
+              <svg viewBox="0 0 72 72" width="72" height="72">
+                <circle cx="36" cy="36" r="29" fill="none" stroke="#1e2d47" stroke-width="5"/>
+                <circle cx="36" cy="36" r="29" fill="none" stroke="#22c55e" stroke-width="5"
+                  stroke-linecap="round" stroke-dasharray="182.2" stroke-dashoffset="54.7"
+                  transform="rotate(-90 36 36)"/>
+              </svg>
+              <div class="hmc-ring-inner">
+                <span class="hmc-ring-val">70</span>
+                <span class="hmc-ring-grade" style="color:#22c55e">Good</span>
               </div>
             </div>
-
-            <div class="dc-divider"></div>
-
-            <!-- Archetype -->
-            <div class="dc-arch">
-              <span class="dc-arch-emoji">🎨</span>
+            <div class="hmc-dims">
+              <div class="hmc-dim-row"><span>Clarity</span><div class="hmc-track"><div class="hmc-fill" style="width:82%;background:#22c55e"></div></div><b style="color:#22c55e">82</b></div>
+              <div class="hmc-dim-row"><span>Impact</span><div class="hmc-track"><div class="hmc-fill" style="width:65%;background:#f59e0b"></div></div><b style="color:#f59e0b">65</b></div>
+              <div class="hmc-dim-row"><span>Credibility</span><div class="hmc-track"><div class="hmc-fill" style="width:74%;background:#22c55e"></div></div><b style="color:#22c55e">74</b></div>
+              <div class="hmc-dim-row"><span>Attention</span><div class="hmc-track"><div class="hmc-fill" style="width:55%;background:#f59e0b"></div></div><b style="color:#f59e0b">55</b></div>
+              <div class="hmc-dim-row"><span>Actionability</span><div class="hmc-track"><div class="hmc-fill" style="width:40%;background:#ef4444"></div></div><b style="color:#ef4444">40</b></div>
+            </div>
+          </div>
+          <div class="hmc-divider"></div>
+          <div class="hmc-insights-row">
+            <div class="hmc-arch">
+              <span class="hmc-arch-emoji">🎓</span>
               <div>
-                <div class="dc-arch-name">The Creator</div>
-                <div class="dc-arch-tag">Craft, originality, aesthetic vision</div>
-              </div>
-              <span class="dc-conf">84% match</span>
-            </div>
-
-            <!-- Issues -->
-            <div class="dc-issues">
-              <div class="dc-issue">
-                <span class="sev-dot" style="background:#ef4444"></span>
-                <span class="dc-issue-msg"><span class="dc-issue-dim" style="color:#f97316">actionability</span>No call-to-action found above the fold</span>
-              </div>
-              <div class="dc-issue">
-                <span class="sev-dot" style="background:#f59e0b"></span>
-                <span class="dc-issue-msg"><span class="dc-issue-dim" style="color:#f59e0b">impact</span>Only 2 quantified achievements found</span>
-              </div>
-              <div class="dc-issue">
-                <span class="sev-dot" style="background:#38bdf8"></span>
-                <span class="dc-issue-msg"><span class="dc-issue-dim" style="color:#38bdf8">credibility</span>No testimonials detected</span>
+                <div class="hmc-arch-name">The Sage</div>
+                <div class="hmc-arch-match">84% archetype match</div>
               </div>
             </div>
-
+            <div class="hmc-voice-pill">🎨 Vocabulary-rich</div>
+          </div>
+          <div class="hmc-issues">
+            <div class="hmc-issue-row hmc-error">
+              <span class="hmc-sev hmc-sev-error">error</span>
+              No call-to-action found above the fold
+            </div>
+            <div class="hmc-issue-row hmc-warning">
+              <span class="hmc-sev hmc-sev-warning">warn</span>
+              Only 2 quantified achievements found
+            </div>
           </div>
         </div>
       </div>
 
     </div>
-  </section>
+  </header>
 
-  <!-- FEATURES -->
-  <section class="features">
-    <div class="section-label">What you get</div>
-    <h2 class="section-title">Everything your brand needs in one report</h2>
-    <p class="section-sub">No sign-up. No cloud. Just paste a URL and get the full picture.</p>
+  <!-- How it works -->
+  <div class="how-it-works">
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <div class="how-body">
+          <div class="how-title">Paste your URL</div>
+          <div class="how-sub">Any public portfolio, personal site, or blog</div>
+        </div>
+      </div>
+      <div class="how-arrow">→</div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <div class="how-body">
+          <div class="how-title">Get your brand score</div>
+          <div class="how-sub">Clarity · Impact · Credibility · Attention · Actionability</div>
+        </div>
+      </div>
+      <div class="how-arrow">→</div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <div class="how-body">
+          <div class="how-title">Fix what matters</div>
+          <div class="how-sub">Prioritized issues, archetype, voice fingerprint</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <div class="feat-grid">
-      <div class="feat-card">
-        <div class="feat-icon">📊</div>
-        <div class="feat-name">5-Dimension Brand Score</div>
-        <div class="feat-desc">Scored 0–100 across Clarity, Impact, Credibility, Attention, and Actionability. Know exactly where you stand and where to focus.</div>
+  <!-- Feature Showcase -->
+  <section class="features-section">
+    <div class="features-inner">
+      <div class="features-heading">
+        <span class="features-label">What you get</span>
+        <h2 class="features-title">Everything your brand needs, in one report</h2>
+        <p class="features-sub">No sign-up. Just paste a URL and get a full breakdown in seconds.</p>
       </div>
-      <div class="feat-card">
-        <div class="feat-icon">⚡</div>
-        <div class="feat-name">Brand Archetype Detection</div>
-        <div class="feat-desc">Identifies which of 12 Jungian archetypes your writing signals — often one you never consciously chose.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🧬</div>
-        <div class="feat-name">Voice Fingerprint</div>
-        <div class="feat-desc">Analyses your writing style across rhythm, richness, active voice, audience focus, formality, and consistency.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">↑</div>
-        <div class="feat-name">Prioritised Action List</div>
-        <div class="feat-desc">Errors, warnings, and tips ranked by impact. Fix the right things first instead of guessing.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">📈</div>
-        <div class="feat-name">Score History</div>
-        <div class="feat-desc">Every analysis is saved locally in SQLite. Re-analyse over time and track how your brand score improves.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🧩</div>
-        <div class="feat-name">Chrome Extension</div>
-        <div class="feat-desc">Analyse any page you're already browsing in one click. No URL copying. Works on LinkedIn profiles too.</div>
+
+      <div class="features-grid">
+
+        <!-- Brand Score -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-icon">📊</span>
+            <div>
+              <div class="feature-name">Brand Score</div>
+              <div class="feature-desc">5 dimensions scored 0–100 with a visual breakdown</div>
+            </div>
+          </div>
+          <div class="feature-preview">
+            <div class="fp-score-row">
+              <div class="fp-ring">
+                <svg viewBox="0 0 60 60">
+                  <circle cx="30" cy="30" r="24" fill="none" stroke="#1d1f35" stroke-width="5"/>
+                  <circle cx="30" cy="30" r="24" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round"
+                    stroke-dasharray="150.8" stroke-dashoffset="45" transform="rotate(-90 30 30)"/>
+                </svg>
+                <span class="fp-ring-val">72</span>
+              </div>
+              <div class="fp-bars">
+                <div class="fp-bar-row"><span>Clarity</span><div class="fp-track"><div class="fp-fill" style="width:82%;background:#22c55e"></div></div><span>82</span></div>
+                <div class="fp-bar-row"><span>Impact</span><div class="fp-track"><div class="fp-fill" style="width:65%;background:#f59e0b"></div></div><span>65</span></div>
+                <div class="fp-bar-row"><span>Credibility</span><div class="fp-track"><div class="fp-fill" style="width:78%;background:#22c55e"></div></div><span>78</span></div>
+                <div class="fp-bar-row"><span>Attention</span><div class="fp-track"><div class="fp-fill" style="width:55%;background:#f59e0b"></div></div><span>55</span></div>
+                <div class="fp-bar-row"><span>Actionability</span><div class="fp-track"><div class="fp-fill" style="width:40%;background:#ef4444"></div></div><span>40</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Actions -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-icon">↑</span>
+            <div>
+              <div class="feature-name">Improvement Actions</div>
+              <div class="feature-desc">Prioritised list of what to fix first to boost your score</div>
+            </div>
+          </div>
+          <div class="feature-preview">
+            <div class="fp-actions">
+              <div class="fp-action-item">
+                <span class="fp-action-num" style="background:rgba(239,68,68,0.15);color:#ef4444">1</span>
+                <div><span class="fp-action-dim" style="color:#f97316">actionability</span><div class="fp-action-msg">No call-to-action found above the fold — add a clear CTA like "Hire Me"</div></div>
+                <span class="fp-sev fp-sev-high">High</span>
+              </div>
+              <div class="fp-action-item">
+                <span class="fp-action-num" style="background:rgba(245,158,11,0.15);color:#f59e0b">2</span>
+                <div><span class="fp-action-dim" style="color:#f59e0b">impact</span><div class="fp-action-msg">No quantified achievements found — show impact with numbers</div></div>
+                <span class="fp-sev fp-sev-med">Med</span>
+              </div>
+              <div class="fp-action-item">
+                <span class="fp-action-num" style="background:rgba(56,189,248,0.15);color:#38bdf8">3</span>
+                <div><span class="fp-action-dim" style="color:#38bdf8">credibility</span><div class="fp-action-msg">No testimonials found — social proof boosts credibility</div></div>
+                <span class="fp-sev fp-sev-low">Low</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Brand Archetype -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-icon">⚡</span>
+            <div>
+              <div class="feature-name">Brand Archetype</div>
+              <div class="feature-desc">Detects which of 12 Jungian archetypes your brand signals</div>
+            </div>
+          </div>
+          <div class="feature-preview">
+            <div class="fp-archetype">
+              <div class="fp-arch-primary">
+                <span class="fp-arch-emoji">🎨</span>
+                <div>
+                  <div class="fp-arch-name">The Creator</div>
+                  <div class="fp-arch-tag">Craft, originality, and aesthetic vision</div>
+                  <div class="fp-arch-traits">
+                    <span>Craft-focused</span><span>Original thinker</span><span>Visually expressive</span>
+                  </div>
+                </div>
+                <div class="fp-arch-conf">84%<span>confidence</span></div>
+              </div>
+              <div class="fp-arch-bars">
+                <div class="fp-arch-bar-row fp-arch-bar-top"><span>🎨</span><span>Creator</span><div class="fp-track"><div class="fp-fill" style="width:100%;background:linear-gradient(90deg,#7c3aed,#0ea5e9)"></div></div></div>
+                <div class="fp-arch-bar-row"><span>⚡</span><span>Hero</span><div class="fp-track"><div class="fp-fill" style="width:62%;background:#4b5563"></div></div></div>
+                <div class="fp-arch-bar-row"><span>🎓</span><span>Sage</span><div class="fp-track"><div class="fp-fill" style="width:45%;background:#4b5563"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Voice DNA -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-icon">🧬</span>
+            <div>
+              <div class="feature-name">Voice DNA</div>
+              <div class="feature-desc">Analyses your writing style across 6 dimensions</div>
+            </div>
+          </div>
+          <div class="feature-preview">
+            <div class="fp-voice">
+              <div class="fp-voice-summary">"Your brand voice is vocabulary-rich and audience-focused."</div>
+              <div class="fp-voice-bars">
+                <div class="fp-bar-row"><span>Rhythm</span><div class="fp-track"><div class="fp-fill" style="width:70%;background:#22c55e"></div></div><span>70</span></div>
+                <div class="fp-bar-row"><span>Richness</span><div class="fp-track"><div class="fp-fill" style="width:88%;background:#22c55e"></div></div><span>88</span></div>
+                <div class="fp-bar-row"><span>Active Voice</span><div class="fp-track"><div class="fp-fill" style="width:55%;background:#f59e0b"></div></div><span>55</span></div>
+                <div class="fp-bar-row"><span>Audience Focus</span><div class="fp-track"><div class="fp-fill" style="width:75%;background:#22c55e"></div></div><span>75</span></div>
+                <div class="fp-bar-row"><span>Formality</span><div class="fp-track"><div class="fp-fill" style="width:60%;background:#f59e0b"></div></div><span>60</span></div>
+                <div class="fp-bar-row"><span>Consistency</span><div class="fp-track"><div class="fp-fill" style="width:82%;background:#22c55e"></div></div><span>82</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chrome Extension -->
+        <div class="feature-card ext-feature-card">
+          <div class="ext-feat-left">
+            <div class="feature-card-header" style="margin-bottom:0.75rem">
+              <span class="feature-icon">🧩</span>
+              <div>
+                <div class="feature-name">Chrome Extension</div>
+                <div class="feature-desc">Analyze any page you're browsing in one click — no copy-pasting URLs ever</div>
+              </div>
+            </div>
+            <ul class="ext-feat-steps">
+              <li><span class="ext-step-num">1</span> Load <code>chrome-extension/</code> in <code>chrome://extensions</code></li>
+              <li><span class="ext-step-num">2</span> Click the BrandLint icon in your toolbar</li>
+              <li><span class="ext-step-num">3</span> Get instant brand score for any page</li>
+            </ul>
+          </div>
+          <div class="ext-feat-right">
+            <!-- Browser chrome mockup -->
+            <div class="ext-browser-mock">
+              <div class="ext-browser-bar">
+                <div class="ext-browser-dots">
+                  <span style="background:#ef4444"></span>
+                  <span style="background:#f59e0b"></span>
+                  <span style="background:#22c55e"></span>
+                </div>
+                <div class="ext-browser-url-pill">portfolio-example.dev</div>
+                <div class="ext-browser-toolbar">
+                  <div class="ext-toolbar-btn">★</div>
+                  <div class="ext-toolbar-btn ext-toolbar-active" title="BrandLint">
+                    <svg viewBox="0 0 20 20" width="13" height="13" fill="none">
+                      <circle cx="8" cy="8" r="5.5" stroke="white" stroke-width="1.8"/>
+                      <path d="M5.5 8 L7.5 10 L11 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="12.3" y1="12.3" x2="17.5" y2="17.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <!-- Extension popup -->
+              <div class="ext-popup-mock">
+                <div class="ext-popup-mock-header">
+                  <span class="ext-popup-mock-icon">
+                    <svg viewBox="0 0 20 20" width="11" height="11" fill="none">
+                      <circle cx="8" cy="8" r="5.5" stroke="white" stroke-width="1.8"/>
+                      <path d="M5.5 8 L7.5 10 L11 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="12.3" y1="12.3" x2="17.5" y2="17.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  <span class="ext-popup-mock-name">BrandLint</span>
+                </div>
+                <div class="ext-popup-mock-url">portfolio-example.dev <span class="ext-popup-sample">Sample</span></div>
+                <div class="ext-popup-mock-score-row">
+                  <div class="ext-popup-mock-circle" style="border-color:#22c55e">
+                    <span style="color:#22c55e;font-size:0.95rem;font-weight:900">70</span>
+                    <span style="color:#22c55e;font-size:0.5rem;font-weight:700">Good</span>
+                  </div>
+                  <div class="ext-popup-mock-bars">
+                    <div class="ext-pmb-row"><span>Clarity</span><div class="ext-pmb-track"><div style="width:82%;background:#22c55e;height:3px;border-radius:2px"></div></div><b style="color:#22c55e">82</b></div>
+                    <div class="ext-pmb-row"><span>Impact</span><div class="ext-pmb-track"><div style="width:65%;background:#f59e0b;height:3px;border-radius:2px"></div></div><b style="color:#f59e0b">65</b></div>
+                    <div class="ext-pmb-row"><span>Credibility</span><div class="ext-pmb-track"><div style="width:74%;background:#22c55e;height:3px;border-radius:2px"></div></div><b style="color:#22c55e">74</b></div>
+                    <div class="ext-pmb-row"><span>Attention</span><div class="ext-pmb-track"><div style="width:55%;background:#f59e0b;height:3px;border-radius:2px"></div></div><b style="color:#f59e0b">55</b></div>
+                    <div class="ext-pmb-row"><span>Actionability</span><div class="ext-pmb-track"><div style="width:40%;background:#ef4444;height:3px;border-radius:2px"></div></div><b style="color:#ef4444">40</b></div>
+                  </div>
+                </div>
+                <div class="ext-popup-mock-issue">
+                  <span class="ext-popup-mock-sev">error</span>
+                  No call-to-action found above the fold
+                </div>
+                <div class="ext-popup-mock-link">View full report in BrandLint →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- INSTALL -->
-  <section class="install">
-    <div class="install-inner">
-      <div>
-        <h2>Up and running in under a minute</h2>
-        <p>BrandLint is a local Node.js server. No database to provision, no API keys to manage, no accounts to create.</p>
-        <a href="https://github.com/priyasahay/BrandLint" class="btn-primary">View on GitHub →</a>
-      </div>
-      <div class="code-block">
-        <div><span class="code-comment"># Clone and install</span></div>
-        <div><span class="code-cmd">git clone</span> <span class="code-dim">github.com/priyasahay/BrandLint</span></div>
-        <div><span class="code-cmd">cd</span> brandlint &amp;&amp; <span class="code-cmd">npm install</span></div>
-        <div>&nbsp;</div>
-        <div><span class="code-comment"># Start the server</span></div>
-        <div><span class="code-cmd">npm run dev</span></div>
-        <div>&nbsp;</div>
-        <div><span class="code-comment"># Open in browser</span></div>
-        <div><span class="code-dim">http://localhost:3000</span></div>
-      </div>
-    </div>
-  </section>
+  <main>
+    <!-- Status bar -->
+    <div id="status" class="status hidden"></div>
 
-  <!-- FOOTER -->
-  <footer>
-    <div style="margin-bottom:0.5rem">
-      <svg viewBox="0 0 20 20" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:6px">
-        <circle cx="8" cy="8" r="5.5" stroke="#a78bfa" stroke-width="1.8"/>
-        <path d="M5.5 8 L7.5 10 L11 6" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="12.3" y1="12.3" x2="17.5" y2="17.5" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      <strong>BrandLint</strong>
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+      <div class="loading-card">
+        <div class="loading-orb"></div>
+        <div class="loading-title">Analyzing your brand...</div>
+        <div id="loading-steps" class="loading-steps">
+          <div class="lstep active" data-step="0">Fetching page content</div>
+          <div class="lstep" data-step="1">Scoring 5 brand dimensions</div>
+          <div class="lstep" data-step="2">Detecting archetype</div>
+          <div class="lstep" data-step="3">Fingerprinting writing voice</div>
+        </div>
+        <div class="loading-bar-wrap"><div id="loading-bar" class="loading-bar"></div></div>
+      </div>
     </div>
-    Open source · MIT licence ·
-    <a href="https://github.com/priyasahay/BrandLint">GitHub</a> ·
-    <a href="https://github.com/priyasahay/BrandLint/blob/main/docs/API.md">API docs</a> ·
-    <a href="https://github.com/priyasahay/BrandLint/blob/main/CONTRIBUTING.md">Contribute</a>
+
+    <!-- Results -->
+    <section id="results" class="results hidden">
+
+      <!-- Analyzed URL + re-analyze -->
+      <div class="analyzed-url-row reveal">
+        <span class="analyzed-label">Analyzed:</span>
+        <span id="analyzed-url" class="analyzed-url"></span>
+        <span id="analyzed-score-badge" class="analyzed-score-badge"></span>
+        <button class="analyze-another-btn" id="analyze-another-btn" title="Analyze a different URL">
+          ← Analyze another
+        </button>
+      </div>
+
+      <!-- Score overview -->
+      <div class="scores-grid reveal">
+        <div class="overall-card">
+          <div class="score-ring" id="overall-ring">
+            <svg viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" class="ring-bg"/>
+              <circle cx="60" cy="60" r="52" class="ring-fill" id="overall-circle"/>
+            </svg>
+            <div class="ring-inner">
+              <span class="score-value" id="overall-score">0</span>
+              <span class="score-denom">/100</span>
+            </div>
+          </div>
+          <span class="score-card-label">Brand Score</span>
+          <span class="score-grade" id="score-grade"></span>
+        </div>
+        <div class="dimension-scores">
+          <div class="dim-score" data-dim="clarity" title="Clarity — How clearly visitors understand who you are and what you do within 5 seconds">
+            <span class="dim-label">Clarity</span>
+            <div class="dim-track"><div class="dim-fill" data-fill="clarity"></div></div>
+            <span class="dim-value" data-dim-val="clarity">0</span>
+            <span class="dim-tip">?</span>
+          </div>
+          <div class="dim-score" data-dim="impact" title="Impact — Whether your work shows measurable results: numbers, outcomes, and achievements">
+            <span class="dim-label">Impact</span>
+            <div class="dim-track"><div class="dim-fill" data-fill="impact"></div></div>
+            <span class="dim-value" data-dim-val="impact">0</span>
+            <span class="dim-tip">?</span>
+          </div>
+          <div class="dim-score" data-dim="credibility" title="Credibility — Social proof: links, testimonials, certifications, and professional presence">
+            <span class="dim-label">Credibility</span>
+            <div class="dim-track"><div class="dim-fill" data-fill="credibility"></div></div>
+            <span class="dim-value" data-dim-val="credibility">0</span>
+            <span class="dim-tip">?</span>
+          </div>
+          <div class="dim-score" data-dim="attention" title="Attention — Visual engagement: structure, headings, images, and content scannability">
+            <span class="dim-label">Attention</span>
+            <div class="dim-track"><div class="dim-fill" data-fill="attention"></div></div>
+            <span class="dim-value" data-dim-val="attention">0</span>
+            <span class="dim-tip">?</span>
+          </div>
+          <div class="dim-score" data-dim="actionability" title="Actionability — How easy it is for visitors to contact you, hire you, or take the next step">
+            <span class="dim-label">Actionability</span>
+            <div class="dim-track"><div class="dim-fill" data-fill="actionability"></div></div>
+            <span class="dim-value" data-dim-val="actionability">0</span>
+            <span class="dim-tip">?</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="charts-row reveal">
+        <div class="chart-card">
+          <h3 class="card-title">Brand Radar</h3>
+          <p class="card-sub-sm">Shape of your brand across all 5 dimensions</p>
+          <canvas id="radar-chart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3 class="card-title">Score Evolution</h3>
+          <p class="card-sub-sm">Track improvement over repeated analyses</p>
+          <canvas id="evolution-chart"></canvas>
+          <p id="no-evolution" class="muted hidden">Analyze this URL again later to track progress over time</p>
+        </div>
+      </div>
+
+      <!-- Feature tabs -->
+      <div class="ftabs reveal" id="feature-tabs">
+        <button class="ftab active" data-target="insights-section">💡 Insights</button>
+        <button class="ftab" data-target="issues-section">⚠ Issues <span class="ftab-count" id="ftab-issue-count"></span></button>
+        <button class="ftab ftab-unique" data-target="archetype-section">⚡ Archetype</button>
+        <button class="ftab ftab-unique" data-target="voice-section">🧬 Voice DNA</button>
+      </div>
+
+      <!-- Insights -->
+      <div class="result-card reveal tab-panel panel-active" id="insights-section">
+        <div class="card-header">
+          <h3 class="card-title">Insights</h3>
+        </div>
+        <p id="insight-summary" class="insight-summary"></p>
+        <div class="insights-columns">
+          <div class="insight-col">
+            <h4 class="insight-col-title">✓ What's working</h4>
+            <ul id="strengths-list" class="insight-list"></ul>
+          </div>
+          <div class="insight-col">
+            <h4 class="insight-col-title">↑ What to improve</h4>
+            <ul id="improvements-list" class="insight-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Issues -->
+      <div class="result-card reveal tab-panel" id="issues-section">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Issues Found <span class="badge" id="issue-count"></span></h3>
+            <p class="card-sub-sm">Fix errors first — they have the biggest impact on your score</p>
+          </div>
+          <div class="issue-filters">
+            <button class="filter-btn active" data-severity="all">All</button>
+            <button class="filter-btn" data-severity="error">Errors</button>
+            <button class="filter-btn" data-severity="warning">Warnings</button>
+            <button class="filter-btn" data-severity="info">Tips</button>
+          </div>
+        </div>
+        <div id="issues-list" class="issues-list"></div>
+      </div>
+
+      <!-- Archetype -->
+      <div class="result-card unique-card reveal tab-panel" id="archetype-section">
+        <div class="unique-header">
+          <span class="unique-tag">UNIQUE INSIGHT</span>
+          <h3 class="card-title">Brand Archetype</h3>
+          <p class="card-sub">Which of the 12 Jungian archetypes does your portfolio signal? This reveals the personality your brand projects — even if unintentionally.</p>
+        </div>
+        <div id="archetype-primary-card" class="archetype-primary-card"></div>
+        <div id="archetype-secondary-row" class="archetype-secondary-row"></div>
+        <div id="archetype-bar-chart" class="archetype-bar-chart"></div>
+      </div>
+
+      <!-- Voice DNA -->
+      <div class="result-card unique-card reveal tab-panel" id="voice-section">
+        <div class="unique-header">
+          <span class="unique-tag">UNIQUE INSIGHT</span>
+          <h3 class="card-title">Brand Voice Fingerprint</h3>
+          <p class="card-sub">6 plain-English dimensions that show how you write — your unique communication style at a glance.</p>
+        </div>
+        <div class="voice-layout">
+          <div class="voice-chart-wrap">
+            <canvas id="voice-chart"></canvas>
+          </div>
+          <div id="voice-details" class="voice-details"></div>
+        </div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div class="results-bottom reveal">
+        <button class="analyze-new-btn" id="analyze-new-btn">⊙ Analyze another URL</button>
+      </div>
+
+    </section>
+
+    <!-- History -->
+    <section id="history-section" class="history-section">
+      <h3 class="section-title">Recent Analyses</h3>
+      <p class="history-hint" id="history-hint" style="display:none">Click any entry to re-run the analysis</p>
+      <div id="history-list" class="history-list"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-logo">
+        <span class="footer-logo-icon">
+          <svg viewBox="0 0 20 20" width="12" height="12" fill="none">
+            <circle cx="8" cy="8" r="5.5" stroke="white" stroke-width="1.8"/>
+            <path d="M5.5 8 L7.5 10 L11 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12.3" y1="12.3" x2="17.5" y2="17.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        BrandLint
+      </span>
+      <span class="footer-sep">·</span>
+      <span class="footer-text">Personal Brand Intelligence · Fully Private · Runs Locally</span>
+      <span class="footer-sep">·</span>
+      <span class="footer-made">Made with ♥ by <a href="https://github.com/priyasahay" target="_blank" class="footer-author">Priya Sahay</a></span>
+    </div>
   </footer>
 
+  <script src="app.js"></script>
 </body>
 </html>
