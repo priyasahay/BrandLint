@@ -40,7 +40,7 @@ form.addEventListener('submit', async (e) => {
   if (!url) return;
 
   if (IS_DEMO) {
-    showError('This is a live preview — to run analysis, clone the repo and start the server locally. See the README for setup instructions.');
+    showError('This is a live preview — to run analysis, clone the repo and start the server locally. → github.com/priyasahay/BrandLint');
     return;
   }
 
@@ -626,7 +626,7 @@ loadHistory();
   function init() {
     W = canvas.width  = canvas.offsetWidth;
     H = canvas.height = canvas.offsetHeight;
-    pts    = Array.from({ length: N }, (_, i) => new Dot(true));
+    pts    = Array.from({ length: N }, () => new Dot(true));
     meteors = [];
   }
 

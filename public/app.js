@@ -620,7 +620,7 @@ loadHistory();
   function init() {
     W = canvas.width  = canvas.offsetWidth;
     H = canvas.height = canvas.offsetHeight;
-    pts    = Array.from({ length: N }, (_, i) => new Dot(true));
+    pts    = Array.from({ length: N }, () => new Dot(true));
     meteors = [];
   }
 
