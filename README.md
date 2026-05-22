@@ -14,6 +14,8 @@ Paste a URL, get a score across five brand dimensions, discover which of 12 arch
 
 If you find BrandLint useful, please consider giving it a ⭐ star. It really helps the project grow!
 
+📖 [Read the story behind BrandLint on Medium](https://medium.com/@priyasahay002/i-treated-personal-branding-like-an-engineering-problem-the-result-was-brandlint-d2e4d624fdb3)
+
 **[Live Preview →](https://priyasahay.github.io/BrandLint/)**
 
 ---
