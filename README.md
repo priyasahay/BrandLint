@@ -200,6 +200,8 @@ Tests cover the core scoring and archetype detection logic. See [src/services/\_
 
 ## Contributors
 
+A big thank you to all our contributors! 🎉
+
 [![Contributors](https://contrib.rocks/image?repo=priyasahay/BrandLint)](https://github.com/priyasahay/BrandLint/graphs/contributors)
 
 ---
