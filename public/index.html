@@ -25,7 +25,7 @@
       <span>BrandLint</span>
     </div>
     <div class="topnav-links">
-      <button id="theme-toggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light mode">
+      <button id="theme-toggle" class="theme-toggle" title="Toggle theme" aria-label="Switch to light mode">
         <span id="theme-icon">☀</span>
       </button>
     </div>
@@ -65,6 +65,7 @@
                 <line x1="12.3" y1="12.3" x2="17.5" y2="17.5" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"/>
               </svg>
             </span>
+            <label for="url-input" class="sr-only">Portfolio URL</label>
             <input
               type="text"
               id="url-input"
@@ -420,7 +421,7 @@
     </div>
 
     <!-- Results -->
-    <section id="results" class="results hidden">
+    <section id="results" class="results hidden" aria-live="polite">
 
       <!-- Analyzed URL + re-analyze -->
       <div class="analyzed-url-row reveal">
@@ -498,11 +499,11 @@
       </div>
 
       <!-- Feature tabs -->
-      <div class="ftabs reveal" id="feature-tabs">
-        <button class="ftab active" data-target="insights-section">💡 Insights</button>
-        <button class="ftab" data-target="issues-section">⚠ Issues <span class="ftab-count" id="ftab-issue-count"></span></button>
-        <button class="ftab ftab-unique" data-target="archetype-section">⚡ Archetype</button>
-        <button class="ftab ftab-unique" data-target="voice-section">🧬 Voice DNA</button>
+      <div class="ftabs reveal" id="feature-tabs" role="tablist">
+        <button class="ftab active" data-target="insights-section" role="tab" aria-selected="true">💡 Insights</button>
+        <button class="ftab" data-target="issues-section" role="tab" aria-selected="false">⚠ Issues <span class="ftab-count" id="ftab-issue-count"></span></button>
+        <button class="ftab ftab-unique" data-target="archetype-section" role="tab" aria-selected="false">⚡ Archetype</button>
+        <button class="ftab ftab-unique" data-target="voice-section" role="tab" aria-selected="false">🧬 Voice DNA</button>
       </div>
 
       <!-- Insights -->
@@ -531,10 +532,10 @@
             <p class="card-sub-sm">Fix errors first — they have the biggest impact on your score</p>
           </div>
           <div class="issue-filters">
-            <button class="filter-btn active" data-severity="all">All</button>
-            <button class="filter-btn" data-severity="error">Errors</button>
-            <button class="filter-btn" data-severity="warning">Warnings</button>
-            <button class="filter-btn" data-severity="info">Tips</button>
+            <button class="filter-btn active" data-severity="all" aria-pressed="true">All</button>
+            <button class="filter-btn" data-severity="error" aria-pressed="false">Errors</button>
+            <button class="filter-btn" data-severity="warning" aria-pressed="false">Warnings</button>
+            <button class="filter-btn" data-severity="info" aria-pressed="false">Tips</button>
           </div>
         </div>
         <div id="issues-list" class="issues-list"></div>
