@@ -12,6 +12,8 @@ Paste a URL, get a score across five brand dimensions, discover which of 12 arch
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org)
 
+If you find BrandLint useful, please consider giving it a ⭐ star. It really helps the project grow!
+
 **[Live Preview →](https://priyasahay.github.io/BrandLint/)**
 
 ---
@@ -187,6 +189,18 @@ npm run test:watch
 ```
 
 Tests cover the core scoring and archetype detection logic. See [src/services/\_\_tests\_\_/](src/services/__tests__/) for the test files.
+
+---
+
+## Maintainers
+
+- [priyasahay](https://github.com/priyasahay) — Creator & Maintainer
+
+---
+
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=priyasahay/BrandLint)](https://github.com/priyasahay/BrandLint/graphs/contributors)
 
 ---
 
