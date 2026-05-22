@@ -294,7 +294,10 @@ function renderIssues(issues) {
   applyIssueFilter(issues);
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
       btn.classList.add('active');
       currentFilter = btn.dataset.severity;
       applyIssueFilter(issues);
@@ -320,7 +323,10 @@ function applyIssueFilter(issues) {
 
 // ─── Feature Tabs ─────────────────────────────────────────────────────────────
 function activateTab(tabBtn) {
-  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.ftab').forEach(b => {
+    b.classList.remove('active');
+    b.setAttribute('aria-selected', b === tabBtn ? 'true' : 'false');
+  });
   tabBtn.classList.add('active');
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('panel-active'));
   const panel = document.getElementById(tabBtn.dataset.target);
@@ -511,6 +517,7 @@ function escapeHtml(text) {
   const apply = (t) => {
     root.setAttribute('data-theme', t);
     icon.textContent = t === 'dark' ? '☀' : '☽';
+    btn.setAttribute('aria-label', t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
     localStorage.setItem('bl-theme', t);
   };
   apply(localStorage.getItem('bl-theme') || 'dark');
